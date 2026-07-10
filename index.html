@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1f14" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Reborn OS" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
+  <title>Ralfijs Reborn OS V2</title>
+  <style>
+    :root{
+      --bg:#07100b; --card:#0d1c13; --card2:#102719; --line:#1c3d28;
+      --text:#e9f5ed; --muted:#9bb5a4; --accent:#34d26f; --danger:#ff6464;
+      --gold:#d6b65d; --shadow: 0 20px 70px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+    body{min-height:100vh;padding:calc(env(safe-area-inset-top) + 18px) 14px calc(env(safe-area-inset-bottom) + 90px)}
+    .wrap{max-width:780px;margin:0 auto}
+    .hero{
+      background:radial-gradient(circle at 20% 0%, rgba(52,210,111,.25), transparent 35%),
+                 linear-gradient(145deg,#0e2819,#08120d 70%);
+      border:1px solid var(--line);border-radius:26px;padding:20px;box-shadow:var(--shadow)
+    }
+    .kicker{color:var(--accent);font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+    h1{font-size:28px;line-height:1.05;margin:8px 0 10px}
+    .sub{color:var(--muted);font-size:14px;line-height:1.45}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+    .stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:12px}
+    .stat b{display:block;font-size:22px}
+    .stat span{color:var(--muted);font-size:12px}
+    .tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(7,16,11,.86);backdrop-filter:blur(18px);border-top:1px solid var(--line);padding:8px 8px calc(env(safe-area-inset-bottom) + 8px);display:flex;gap:6px;z-index:5}
+    .tab{flex:1;border:1px solid transparent;background:transparent;color:var(--muted);border-radius:14px;padding:10px 4px;font-size:11px;font-weight:800}
+    .tab.active{background:var(--card2);color:var(--accent);border-color:var(--line)}
+    .panel{display:none;margin-top:14px}
+    .panel.active{display:block}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin:12px 0;box-shadow:0 8px 28px rgba(0,0,0,.18)}
+    .card h2{font-size:18px;margin:0 0 12px}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0}
+    label.check{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);padding:12px;border-radius:16px;margin:8px 0}
+    input[type="checkbox"]{width:22px;height:22px;accent-color:#34d26f}
+    input,textarea,select{width:100%;background:#07120c;color:var(--text);border:1px solid var(--line);border-radius:14px;padding:12px;font-size:16px;outline:none}
+    textarea{min-height:92px;resize:vertical}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+    button{background:var(--accent);color:#031007;border:none;border-radius:16px;padding:12px 14px;font-weight:900;font-size:14px}
+    button.secondary{background:#142719;color:var(--text);border:1px solid var(--line)}
+    button.danger{background:#331616;color:#ffb3b3;border:1px solid #5b2828}
+    .progress{height:12px;background:#07120c;border:1px solid var(--line);border-radius:99px;overflow:hidden}
+    .bar{height:100%;width:0%;background:var(--accent)}
+    .small{color:var(--muted);font-size:12px;line-height:1.35}
+    .quote{border-left:3px solid var(--accent);padding-left:12px;color:#cce8d5}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#13281b;border:1px solid var(--line);color:var(--muted);font-size:12px;font-weight:800}
+    .warn{color:var(--gold)}
+    @media(max-width:430px){h1{font-size:25px}.grid,.two{grid-template-columns:1fr}.three{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="kicker">Ralfijs-Reborn</div>
+    <h1>Command Center</h1>
+    <div class="sub">Start date: 11 July 2026. This app is not here to motivate you. It is here to keep score.</div>
+    <div class="grid">
+      <div class="stat"><b id="dayNum">Day 1</b><span>Current streak</span></div>
+      <div class="stat"><b id="todayDate">—</b><span>Today</span></div>
+      <div class="stat"><b id="completion">0%</b><span>Today completed</span></div>
+      <div class="stat"><b id="debtTotal">€5,494</b><span>Total debt</span></div>
+    </div>
+  </section>
+
+  <section id="today" class="panel active">
+    <div class="card">
+      <div class="row">
+        <h2>Today’s Mission</h2>
+        <span class="pill" id="modeLabel">Normal day</span>
+      </div>
+      <label class="check"><input id="shiftMode" type="checkbox">24h shift mode</label>
+      <div id="checklist"></div>
+      <button onclick="saveAll()">Save today</button>
+      <button class="secondary" onclick="copyCheckin()">Copy check-in</button>
+      <p class="small">Rule: adjust the plan, never abandon the mission.</p>
+    </div>
+  </section>
+
+  <section id="army" class="panel">
+    <div class="card">
+      <h2>Army Tracker</h2>
+      <div class="two">
+        <div><label>Push-ups now</label><input id="pushups" type="number" value="20"></div>
+        <div><label>Goal</label><input id="pushGoal" type="number" value="45"></div>
+      </div>
+      <div class="progress"><div id="pushBar" class="bar"></div></div><br>
+      <div class="two">
+        <div><label>Sit-ups/abs now</label><input id="situps" type="number" value="15"></div>
+        <div><label>Goal</label><input id="sitGoal" type="number" value="55"></div>
+      </div>
+      <div class="progress"><div id="sitBar" class="bar"></div></div><br>
+      <div class="two">
+        <div><label>3 km now</label><input id="runTime" value="20:00"></div>
+        <div><label>Goal</label><input id="runGoal" value="13:30"></div>
+      </div>
+      <div class="progress"><div id="runBar" class="bar"></div></div>
+      <p class="small">Training target: push-ups + abs often, running 3x/week. You are training to pass, not to look busy.</p>
+      <button onclick="saveAll()">Save army stats</button>
+    </div>
+  </section>
+
+  <section id="money" class="panel">
+    <div class="card">
+      <h2>Money Tracker</h2>
+      <div class="three">
+        <div><label>Savings</label><input id="savings" type="number" value="1600"></div>
+        <div><label>Needs</label><input id="needs" type="number" value="460"></div>
+        <div><label>Wants</label><input id="wants" type="number" value="260"></div>
+      </div>
+      <br>
+      <div class="three">
+        <div><label>Dentistry debt</label><input id="dentistry" type="number" value="4444"></div>
+        <div><label>Phone debt</label><input id="phone" type="number" value="800"></div>
+        <div><label>Mom debt</label><input id="mom" type="number" value="250"></div>
+      </div>
+      <p class="quote">Stabilization mode: protect emergency money, kill small emotional debt, then attack the big debt.</p>
+      <button onclick="saveAll()">Save money</button>
+    </div>
+  </section>
+
+  <section id="business" class="panel">
+    <div class="card">
+      <h2>RalfijsWEB Tracker</h2>
+      <div class="three">
+        <div><label>Leads today</label><input id="leads" type="number" value="0"></div>
+        <div><label>Messages today</label><input id="messages" type="number" value="0"></div>
+        <div><label>Replies</label><input id="replies" type="number" value="0"></div>
+      </div>
+      <br>
+      <div class="two">
+        <div><label>Calls booked</label><input id="calls" type="number" value="0"></div>
+        <div><label>Content this week</label><input id="content" type="number" value="0"></div>
+      </div>
+      <p class="small">Starter target: 10 leads/day, 5 messages/day, 3 content pieces/week. Sales first. Tweaking your own website does not pay the bills.</p>
+      <button onclick="saveAll()">Save business</button>
+    </div>
+  </section>
+
+  <section id="reflection" class="panel">
+    <div class="card">
+      <h2>Daily Reflection</h2>
+      <label>Win of the day</label><textarea id="win"></textarea>
+      <label>Mistake of the day</label><textarea id="mistake"></textarea>
+      <label>Lesson of the day</label><textarea id="lesson"></textarea>
+      <label>Tomorrow’s main mission</label><textarea id="tomorrow"></textarea>
+      <label>Did I act like the man my child can look up to?</label>
+      <select id="father"><option>Yes</option><option>Partly</option><option>No</option></select>
+      <br><br>
+      <button onclick="saveAll()">Save reflection</button>
+      <button class="secondary" onclick="copyReflection()">Copy reflection</button>
+      <button class="danger" onclick="resetToday()">Reset today only</button>
+    </div>
+  </section>
+</div>
+
+<nav class="tabs">
+  <button class="tab active" onclick="showPanel('today',this)">Today</button>
+  <button class="tab" onclick="showPanel('army',this)">Army</button>
+  <button class="tab" onclick="showPanel('money',this)">Money</button>
+  <button class="tab" onclick="showPanel('business',this)">Business</button>
+  <button class="tab" onclick="showPanel('reflection',this)">Reflect</button>
+</nav>
+
+<script>
+const START = new Date("2026-07-11T00:00:00");
+const normalTasks = [
+  ["task_push","Army: push-ups"],
+  ["task_abs","Army: sit-ups/abs"],
+  ["task_move","Body: run/walk/mobility"],
+  ["task_water","Health: water + real food"],
+  ["task_business","Business: leads/messages"],
+  ["task_money","Money: no useless spending"],
+  ["task_family","Family: one supportive action"]
+];
+const shiftTasks = [
+  ["task_push","Army: 2 sets push-ups"],
+  ["task_abs","Army: 2 sets abs"],
+  ["task_water","Health: 1.5L water + real food"],
+  ["task_business","Business: 10 leads written down"],
+  ["task_money","Money: no useless shift spending"],
+  ["task_mind","Mind: no self-hate if shift is hard"]
+];
+
+function todayKey(){ return "reborn-v2-" + new Date().toISOString().slice(0,10); }
+function globalKey(){ return "reborn-v2-global"; }
+function $(id){ return document.getElementById(id); }
+
+function showPanel(id, btn){
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  $(id).classList.add("active"); btn.classList.add("active");
+}
+function buildChecklist(){
+  const list = $("shiftMode").checked ? shiftTasks : normalTasks;
+  $("modeLabel").textContent = $("shiftMode").checked ? "24h shift" : "Normal day";
+  $("checklist").innerHTML = list.map(([id,label]) => 
+    `<label class="check"><input id="${id}" type="checkbox" onchange="updateCompletion(); saveAll(false)"> ${label}</label>`
+  ).join("");
+  loadTodayChecks();
+  updateCompletion();
+}
+function updateTop(){
+  const now = new Date();
+  const day = Math.max(1, Math.floor((now - START)/(1000*60*60*24)) + 1);
+  $("dayNum").textContent = "Day " + day;
+  $("todayDate").textContent = now.toLocaleDateString("en-GB", {day:"2-digit", month:"short"});
+  const debt = (+$("dentistry").value||0)+(+$("phone").value||0)+(+$("mom").value||0);
+  $("debtTotal").textContent = "€" + debt.toLocaleString("en-US");
+}
+function updateCompletion(){
+  const checks = [...document.querySelectorAll("#checklist input[type=checkbox]")];
+  const done = checks.filter(c=>c.checked).length;
+  const pct = checks.length ? Math.round(done/checks.length*100) : 0;
+  $("completion").textContent = pct + "%";
+}
+function timeToSeconds(t){
+  const [m,s] = String(t).split(":").map(Number);
+  return (m||0)*60 + (s||0);
+}
+function updateBars(){
+  $("pushBar").style.width = Math.min(100, (($("pushups").value/$("pushGoal").value)*100 || 0)) + "%";
+  $("sitBar").style.width = Math.min(100, (($("situps").value/$("sitGoal").value)*100 || 0)) + "%";
+  const now = timeToSeconds($("runTime").value), goal = timeToSeconds($("runGoal").value), start = 20*60;
+  let pct = 0;
+  if(now && goal) pct = Math.max(0, Math.min(100, ((start-now)/(start-goal))*100));
+  $("runBar").style.width = pct + "%";
+}
+function saveAll(show=true){
+  const ids = ["pushups","pushGoal","situps","sitGoal","runTime","runGoal","savings","needs","wants","dentistry","phone","mom"];
+  const global = {};
+  ids.forEach(id=>global[id]=$(id).value);
+  localStorage.setItem(globalKey(), JSON.stringify(global));
+
+  const todayIds = ["shiftMode","leads","messages","replies","calls","content","win","mistake","lesson","tomorrow","father"];
+  const day = {};
+  todayIds.forEach(id=> day[id] = $(id).type==="checkbox" ? $(id).checked : $(id).value);
+  [...document.querySelectorAll("#checklist input[type=checkbox]")].forEach(c=>day[c.id]=c.checked);
+  localStorage.setItem(todayKey(), JSON.stringify(day));
+  updateTop(); updateBars(); updateCompletion();
+  if(show) alert("Saved. Keep moving.");
+}
+function loadAll(){
+  const global = JSON.parse(localStorage.getItem(globalKey())||"{}");
+  Object.entries(global).forEach(([k,v])=>{ if($(k)) $(k).value=v; });
+  const day = JSON.parse(localStorage.getItem(todayKey())||"{}");
+  if(day.shiftMode) $("shiftMode").checked = day.shiftMode;
+  buildChecklist();
+  Object.entries(day).forEach(([k,v])=>{ if($(k)) { if($(k).type==="checkbox") $(k).checked=v; else $(k).value=v; }});
+  updateTop(); updateBars(); updateCompletion();
+}
+function loadTodayChecks(){
+  const day = JSON.parse(localStorage.getItem(todayKey())||"{}");
+  Object.entries(day).forEach(([k,v])=>{ if($(k) && $(k).type==="checkbox") $(k).checked=v; });
+}
+function copyCheckin(){
+  const checks = [...document.querySelectorAll("#checklist input[type=checkbox]")].map(c => `${c.checked ? "✅" : "❌"} ${c.parentElement.textContent.trim()}`).join("\n");
+  const txt = `Ralfijs-Reborn Check-in\n${$("dayNum").textContent}\n\n${checks}\n\nBusiness: leads ${$("leads").value}, messages ${$("messages").value}, replies ${$("replies").value}, calls ${$("calls").value}\nMoney: savings €${$("savings").value}, total debt ${$("debtTotal").textContent}\nMood: /10`;
+  navigator.clipboard.writeText(txt).then(()=>alert("Check-in copied."));
+}
+function copyReflection(){
+  const txt = `Daily Reflection\n${$("dayNum").textContent}\n\nWin: ${$("win").value}\n\nMistake: ${$("mistake").value}\n\nLesson: ${$("lesson").value}\n\nTomorrow: ${$("tomorrow").value}\n\nFather standard: ${$("father").value}`;
+  navigator.clipboard.writeText(txt).then(()=>alert("Reflection copied."));
+}
+function resetToday(){
+  if(!confirm("Reset today's checkboxes and reflection?")) return;
+  localStorage.removeItem(todayKey());
+  location.reload();
+}
+$("shiftMode").addEventListener("change", ()=>{ buildChecklist(); saveAll(false); });
+document.querySelectorAll("input,textarea,select").forEach(el=>el.addEventListener("input",()=>{updateTop(); updateBars();}));
+if("serviceWorker" in navigator){ navigator.serviceWorker.register("service-worker.js"); }
+loadAll();
+</script>
+</body>
+</html>
