@@ -1,677 +1,695 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="lv">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ralfijs Reborn</title>
-  <meta name="theme-color" content="#0f1311" />
-  <style>
-    :root{
-      --bg:#0b0e0d;
-      --panel:#121715;
-      --panel-2:#171d1a;
-      --line:#2a332e;
-      --text:#f3f5f4;
-      --muted:#95a29b;
-      --accent:#8ea78f;
-      --good:#75b887;
-      --bad:#c87070;
-      --warn:#c6a867;
-      --shadow:0 18px 50px rgba(0,0,0,.35);
-      --radius:22px;
-    }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{
-      margin:0;
-      min-height:100vh;
-      background:
-        radial-gradient(circle at top right, rgba(104,130,108,.16), transparent 35%),
-        linear-gradient(180deg,#0a0d0c 0%,#0e1210 100%);
-      color:var(--text);
-      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    }
-    button,input,select,textarea{font:inherit}
-    button{cursor:pointer}
-    .app{max-width:1180px;margin:0 auto;padding:24px 18px 110px}
-    .topbar{
-      display:flex;align-items:center;justify-content:space-between;gap:16px;
-      margin-bottom:24px;
-    }
-    .brand{display:flex;align-items:center;gap:14px}
-    .logo{
-      width:48px;height:48px;border:1px solid #3b4a41;border-radius:16px;
-      display:grid;place-items:center;background:linear-gradient(145deg,#1a211d,#101412);
-      box-shadow:var(--shadow);font-weight:900;letter-spacing:-2px;font-size:20px;
-    }
-    .brand h1{margin:0;font-size:22px;letter-spacing:.3px}
-    .brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
-    .date-pill{
-      color:var(--muted);border:1px solid var(--line);background:rgba(18,23,21,.82);
-      padding:10px 14px;border-radius:999px;font-size:13px;
-    }
-    .hero{
-      display:grid;grid-template-columns:1.35fr .65fr;gap:18px;margin-bottom:18px;
-    }
-    .card{
-      background:linear-gradient(180deg,rgba(20,26,23,.96),rgba(15,20,18,.96));
-      border:1px solid var(--line);border-radius:var(--radius);
-      padding:22px;box-shadow:var(--shadow);
-    }
-    .hero-main{
-      min-height:255px;display:flex;flex-direction:column;justify-content:space-between;
-      position:relative;overflow:hidden;
-    }
-    .hero-main:after{
-      content:"";position:absolute;width:260px;height:260px;border-radius:50%;
-      background:radial-gradient(circle,rgba(142,167,143,.18),transparent 68%);
-      right:-70px;top:-70px;pointer-events:none;
-    }
-    .eyebrow{color:var(--accent);text-transform:uppercase;letter-spacing:1.8px;font-size:12px;font-weight:800}
-    .mission-title{font-size:34px;line-height:1.08;margin:12px 0 8px;max-width:700px}
-    .mission-note{color:var(--muted);margin:0;max-width:670px}
-    .mission-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:22px}
-    .primary,.secondary,.danger{
-      border:0;border-radius:14px;padding:12px 16px;font-weight:800;
-    }
-    .primary{background:var(--text);color:#0b0e0d}
-    .secondary{background:#202823;color:var(--text);border:1px solid #313b35}
-    .danger{background:rgba(200,112,112,.13);color:#efb1b1;border:1px solid rgba(200,112,112,.32)}
-    .score-card{display:flex;flex-direction:column;justify-content:space-between}
-    .score-ring{
-      width:150px;height:150px;border-radius:50%;margin:8px auto 14px;
-      background:conic-gradient(var(--accent) 0deg, #27312b 0deg);
-      display:grid;place-items:center;position:relative;
-    }
-    .score-ring:before{
-      content:"";position:absolute;inset:13px;border-radius:50%;background:#121715;border:1px solid #2a342e;
-    }
-    .score-ring strong{position:relative;font-size:35px}
-    .score-ring span{font-size:15px;color:var(--muted)}
-    .status{text-align:center;color:var(--muted);font-size:13px}
-    .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}
-    .section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
-    .section-title h2{font-size:18px;margin:0}
-    .section-title small{color:var(--muted)}
-    .task-list{display:grid;gap:10px}
-    .task{
-      display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--line);
-      border-radius:16px;background:#151b18;
-    }
-    .task input{width:20px;height:20px;accent-color:#8ea78f}
-    .task.done .task-text{text-decoration:line-through;color:#758079}
-    .task-text{flex:1}
-    .pill{font-size:11px;padding:5px 8px;border-radius:999px;background:#202823;color:#aab5ae}
-    .quick-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-    .field{display:grid;gap:7px}
-    .field label{font-size:12px;color:var(--muted)}
-    input,select,textarea{
-      width:100%;background:#101512;color:var(--text);border:1px solid #2a332e;
-      border-radius:13px;padding:12px 13px;outline:none;
-    }
-    textarea{min-height:92px;resize:vertical}
-    input:focus,select:focus,textarea:focus{border-color:#708676}
-    .full{grid-column:1/-1}
-    .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
-    .stat{
-      border:1px solid var(--line);border-radius:16px;background:#141a17;padding:14px;
-    }
-    .stat span{display:block;color:var(--muted);font-size:11px;margin-bottom:7px}
-    .stat strong{font-size:20px}
-    .trend-up{color:var(--good)}
-    .trend-down{color:var(--bad)}
-    .trend-flat{color:var(--warn)}
-    .tabs{
-      position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:50;
-      width:min(720px,calc(100% - 28px));display:grid;grid-template-columns:repeat(4,1fr);
-      gap:7px;padding:8px;border:1px solid var(--line);border-radius:20px;
-      background:rgba(12,16,14,.92);backdrop-filter:blur(16px);box-shadow:var(--shadow);
-    }
-    .tab{
-      border:0;background:transparent;color:var(--muted);padding:12px;border-radius:14px;font-weight:800;
-    }
-    .tab.active{background:#222b25;color:var(--text)}
-    .view{display:none}
-    .view.active{display:block}
-    .metric-table{width:100%;border-collapse:collapse;margin-top:12px}
-    .metric-table th,.metric-table td{
-      text-align:left;padding:13px 10px;border-bottom:1px solid var(--line);font-size:14px;
-    }
-    .metric-table th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px}
-    .chart{display:flex;align-items:flex-end;gap:10px;height:190px;padding:18px 4px 4px}
-    .bar-wrap{flex:1;text-align:center;color:var(--muted);font-size:10px}
-    .bar{
-      min-height:5px;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,#9bb29d,#5d7463);
-      margin-bottom:8px;transition:.3s;
-    }
-    .monthly-head{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center}
-    .overall-change{font-size:42px;font-weight:900}
-    .heatmap{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-top:14px}
-    .day{
-      aspect-ratio:1;border-radius:8px;background:#151b18;border:1px solid #242d28;
-      display:grid;place-items:center;font-size:10px;color:#6f7b74;
-    }
-    .day.l1{background:#202923}.day.l2{background:#36483b}.day.l3{background:#5f7865;color:white}.day.l4{background:#8ea78f;color:#0b0e0d;font-weight:900}
-    .empty-state{color:var(--muted);font-size:14px;padding:10px 0}
-    .split{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-    .quote{font-size:18px;line-height:1.5;color:#dfe6e1;border-left:3px solid var(--accent);padding-left:14px}
-    .settings-list{display:grid;gap:12px}
-    .settings-item{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);padding:14px;border-radius:15px}
-    .small-btn{padding:8px 10px;border-radius:10px}
-    @media(max-width:800px){
-      .hero,.grid,.split{grid-template-columns:1fr}
-      .mission-title{font-size:29px}
-      .stats-grid{grid-template-columns:1fr 1fr}
-    }
-    @media(max-width:520px){
-      .app{padding:16px 12px 104px}
-      .topbar{align-items:flex-start}
-      .date-pill{display:none}
-      .card{padding:17px;border-radius:18px}
-      .quick-grid,.stats-grid{grid-template-columns:1fr}
-      .tabs{bottom:10px}
-      .tab{font-size:12px;padding:11px 6px}
-      .mission-title{font-size:26px}
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>RALFIJS REBORN</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0E110D">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ralfijs">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0E110D;
+    --panel: #171B14;
+    --panel-2: #1D2218;
+    --border: #2A3222;
+    --border-bright: #4A5A34;
+    --text: #E9E7DD;
+    --muted: #8B9080;
+    --accent: #9CB86B;
+    --accent-dim: #6E8449;
+    --warn: #D9A441;
+    --danger: #C25B4A;
+    --ok: #6FAE6B;
+    --radius: 2px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(156,184,107,0.06), transparent 40%),
+      radial-gradient(circle at 100% 100%, rgba(156,184,107,0.04), transparent 40%);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+  .wrap{max-width: 720px; margin: 0 auto; padding: 18px 16px 40px;}
+
+  /* ---- header / masthead ---- */
+  .masthead{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    border-bottom: 2px solid var(--border-bright);
+    padding-bottom: 12px; margin-bottom: 18px;
+  }
+  .masthead h1{
+    font-family:'Oswald', sans-serif; font-weight:700; letter-spacing: 3px;
+    font-size: 22px; margin:0; color: var(--text);
+  }
+  .masthead .tag{
+    font-family:'JetBrains Mono', monospace; font-size: 11px; color: var(--accent);
+    letter-spacing: 1px; margin-top: 2px;
+  }
+  .datestamp{
+    font-family:'JetBrains Mono', monospace; font-size: 12px; color: var(--muted);
+    text-align:right;
+  }
+
+  /* ---- nav ---- */
+  .nav{display:flex; gap:6px; margin-bottom:20px;}
+  .nav button{
+    flex:1; background: var(--panel); border: 1px solid var(--border);
+    color: var(--muted); font-family:'Oswald',sans-serif; letter-spacing:1px;
+    font-size:12px; padding:9px 6px; cursor:pointer; text-transform:uppercase;
+    border-radius: var(--radius);
+  }
+  .nav button.active{ color: var(--bg); background: var(--accent); border-color: var(--accent); font-weight:600;}
+
+  /* ---- briefing card (signature element) ---- */
+  .briefing{
+    position:relative;
+    border: 1px solid var(--border-bright);
+    background: linear-gradient(180deg, var(--panel-2), var(--panel));
+    padding: 18px 18px 16px;
+    margin-bottom: 18px;
+    border-radius: var(--radius);
+  }
+  .briefing::before, .briefing::after,
+  .briefing .cbr::before, .briefing .cbr::after{
+    content:""; position:absolute; width:12px; height:12px; border-color: var(--accent); border-style:solid; opacity:.8;
+  }
+  .briefing::before{ top:-1px; left:-1px; border-width:2px 0 0 2px; }
+  .briefing::after{ top:-1px; right:-1px; border-width:2px 2px 0 0; }
+  .briefing .cbr::before{ bottom:-1px; left:-1px; border-width:0 0 2px 2px; }
+  .briefing .cbr::after{ bottom:-1px; right:-1px; border-width:0 2px 2px 0; }
+  .briefing .eyebrow{
+    font-family:'JetBrains Mono', monospace; font-size: 11px; color: var(--accent);
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom:6px;
+  }
+  .briefing h2{
+    font-family:'Oswald', sans-serif; font-size: 26px; margin: 0 0 4px; letter-spacing:1px;
+  }
+  .briefing .sub{color: var(--muted); font-size: 13px; margin-bottom: 14px;}
+  .progress-row{display:flex; align-items:center; gap:14px;}
+  .progress-track{
+    flex:1; height:10px; background: #0000004d; border:1px solid var(--border);
+    border-radius: 4px; overflow:hidden;
+  }
+  .progress-fill{height:100%; background: linear-gradient(90deg, var(--accent-dim), var(--accent)); transition: width .3s ease;}
+  .progress-pct{font-family:'JetBrains Mono', monospace; font-weight:700; font-size:18px; min-width:52px; text-align:right;}
+
+  /* ---- generic card/section ---- */
+  .card{
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px;
+  }
+  .card h3{
+    font-family:'Oswald', sans-serif; font-size: 13px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 10px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .card h3 .badge{
+    font-family:'JetBrains Mono',monospace; font-size:10px; color: var(--muted);
+    border:1px solid var(--border); padding:2px 6px; border-radius:3px; letter-spacing:0.5px;
+  }
+
+  /* checklist */
+  .item{
+    display:flex; align-items:center; gap:10px; padding:9px 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .item:last-child{border-bottom:none;}
+  .item input[type=checkbox]{
+    appearance:none; width:19px; height:19px; min-width:19px; border:1px solid var(--border-bright);
+    background: #0000004d; border-radius:3px; cursor:pointer; position:relative;
+  }
+  .item input[type=checkbox]:checked{ background: var(--accent); border-color: var(--accent); }
+  .item input[type=checkbox]:checked::after{
+    content:"✓"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    color: var(--bg); font-size:13px; font-weight:700;
+  }
+  .item label{flex:1; font-size:14px; cursor:pointer;}
+  .item.done label{ color: var(--muted); text-decoration: line-through; }
+  .item .meta{font-family:'JetBrains Mono',monospace; font-size:11px; color: var(--muted);}
+
+  .mission-item label{ font-family:'Oswald', sans-serif; font-size:16px; letter-spacing:0.5px;}
+
+  /* weigh-in */
+  .weighin-banner{
+    background: rgba(217,164,65,0.12); border:1px solid var(--warn); color: var(--warn);
+    padding:10px 12px; border-radius: var(--radius); font-size:13px; margin-bottom:14px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .weight-row{display:flex; gap:8px; align-items:center;}
+  .weight-row input[type=number]{
+    background: #0000004d; border:1px solid var(--border-bright); color:var(--text);
+    padding:8px 10px; border-radius:3px; width:110px; font-family:'JetBrains Mono',monospace; font-size:14px;
+  }
+  .btn{
+    background: var(--accent); color: var(--bg); border:none; font-weight:700;
+    font-family:'Oswald',sans-serif; letter-spacing:1px; text-transform:uppercase;
+    font-size:12px; padding:9px 14px; border-radius:3px; cursor:pointer;
+  }
+  .btn.secondary{ background:transparent; color:var(--accent); border:1px solid var(--accent-dim); }
+  .btn.danger{ background: var(--danger); color:#fff; }
+  .btn:disabled{opacity:.4; cursor:default;}
+
+  /* checkin form */
+  .form-grid{display:grid; grid-template-columns: 1fr 1fr; gap:10px;}
+  .form-grid .full{grid-column: 1 / -1;}
+  .field label{display:block; font-size:11px; color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;}
+  .field input, .field textarea, .field select{
+    width:100%; background:#0000004d; border:1px solid var(--border-bright); color:var(--text);
+    padding:8px 9px; border-radius:3px; font-family:'Inter',sans-serif; font-size:13px;
+  }
+  .field textarea{resize:vertical; min-height:44px;}
+  .checkin-done{
+    background: rgba(111,174,107,0.1); border:1px solid var(--ok); color:var(--ok);
+    padding:10px 12px; border-radius:var(--radius); font-size:13px;
+  }
+
+  /* stats */
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th,td{ text-align:left; padding:6px 4px; border-bottom:1px solid var(--border); }
+  th{color:var(--muted); font-weight:500; font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase;}
+  .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;}
+  .stat-box{background:var(--panel-2); border:1px solid var(--border); padding:12px; border-radius:var(--radius);}
+  .stat-box .num{font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700;}
+  .stat-box .lbl{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:2px;}
+  .delta-up{color:var(--ok);}
+  .delta-down{color:var(--danger);}
+
+  .settings-row{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border);}
+  .settings-row:last-child{border-bottom:none;}
+  .settings-row .lbl{font-size:13px;}
+  .settings-row .desc{font-size:11px; color:var(--muted); margin-top:2px;}
+  input[type=file]{display:none;}
+
+  .empty{color:var(--muted); font-size:13px; text-align:center; padding:20px 0;}
+  .footer-note{text-align:center; color:var(--border-bright); font-size:11px; margin-top:24px; font-family:'JetBrains Mono',monospace;}
+</style>
 </head>
 <body>
-  <main class="app">
-    <header class="topbar">
-      <div class="brand">
-        <div class="logo">RR</div>
-        <div>
-          <h1>Ralfijs Reborn</h1>
-          <p>Built by actions. Proven by consistency.</p>
-        </div>
-      </div>
-      <div class="date-pill" id="todayDate"></div>
-    </header>
+<div class="wrap">
 
-    <section id="todayView" class="view active">
-      <div class="hero">
-        <article class="card hero-main">
-          <div>
-            <div class="eyebrow">Today's Critical Mission</div>
-            <h2 class="mission-title" id="missionDisplay">Complete the action that moves your life forward.</h2>
-            <p class="mission-note">One finished priority is worth more than ten planned goals.</p>
-          </div>
-          <div class="mission-row">
-            <button class="primary" id="missionDoneBtn">Mark completed</button>
-            <button class="secondary" id="editMissionBtn">Edit mission</button>
-          </div>
-        </article>
+  <div class="masthead">
+    <div>
+      <h1>RALFIJS REBORN</h1>
+      <div class="tag">DAILY EXECUTION SYSTEM</div>
+    </div>
+    <div class="datestamp" id="datestamp"></div>
+  </div>
 
-        <article class="card score-card">
-          <div class="eyebrow">Today's execution</div>
-          <div class="score-ring" id="scoreRing"><strong id="scoreValue">0<span>%</span></strong></div>
-          <div class="status" id="scoreStatus">Rebuilding</div>
-        </article>
-      </div>
+  <div class="nav">
+    <button data-tab="today" class="active">Šodien</button>
+    <button data-tab="stats">Statistika</button>
+    <button data-tab="settings">Iestatījumi</button>
+  </div>
 
-      <div class="grid">
-        <article class="card">
-          <div class="section-title">
-            <h2>Daily non-negotiables</h2>
-            <small id="taskCount">0/0 completed</small>
-          </div>
-          <div class="task-list" id="taskList"></div>
-        </article>
+  <div id="tab-today"></div>
+  <div id="tab-stats" style="display:none;"></div>
+  <div id="tab-settings" style="display:none;"></div>
 
-        <article class="card">
-          <div class="section-title">
-            <h2>Quick daily check-in</h2>
-            <small>1 minute</small>
-          </div>
-          <div class="quick-grid">
-            <div class="field"><label>Discipline 1–10</label><input id="discipline" type="number" min="1" max="10" /></div>
-            <div class="field"><label>Energy 1–10</label><input id="energy" type="number" min="1" max="10" /></div>
-            <div class="field"><label>Mood 1–10</label><input id="mood" type="number" min="1" max="10" /></div>
-            <div class="field"><label>Sleep hours</label><input id="sleep" type="number" min="0" max="24" step="0.25" /></div>
-            <div class="field"><label>Body weight, kg</label><input id="weight" type="number" min="0" step="0.1" /></div>
-            <div class="field"><label>Money spent, €</label><input id="spent" type="number" min="0" step="0.01" /></div>
-            <div class="field full"><label>RalfijsWEB work, minutes</label><input id="webMinutes" type="number" min="0" /></div>
-            <div class="field full"><label>Biggest win</label><textarea id="win"></textarea></div>
-            <div class="field full"><label>What held me back?</label><textarea id="blocker"></textarea></div>
-            <div class="field full"><label>Tomorrow's Critical Mission</label><input id="tomorrowMission" /></div>
-            <button class="primary full" id="saveCheckinBtn">Save today's check-in</button>
-          </div>
-        </article>
-      </div>
-    </section>
+  <div class="footer-note">RALFIJS REBORN — LOKĀLI GLABĀTI DATI ŠAJĀ PĀRLŪKĀ</div>
+</div>
 
-    <section id="progressView" class="view">
-      <div class="split">
-        <article class="card">
-          <div class="section-title"><h2>Performance records</h2><small>Update anytime</small></div>
-          <div class="quick-grid">
-            <div class="field"><label>Push-ups max</label><input id="pushups" type="number" min="0"></div>
-            <div class="field"><label>Sit-ups max</label><input id="situps" type="number" min="0"></div>
-            <div class="field"><label>3 km time (minutes)</label><input id="runTime" type="number" min="0" step="0.01"></div>
-            <div class="field"><label>Savings balance, €</label><input id="savings" type="number" min="0" step="0.01"></div>
-            <div class="field"><label>Debt remaining, €</label><input id="debt" type="number" min="0" step="0.01"></div>
-            <div class="field"><label>RalfijsWEB revenue, €</label><input id="revenue" type="number" min="0" step="0.01"></div>
-            <div class="field"><label>Leads contacted</label><input id="leads" type="number" min="0"></div>
-            <div class="field"><label>Content published</label><input id="content" type="number" min="0"></div>
-            <button class="primary full" id="saveMetricsBtn">Save monthly snapshot</button>
-          </div>
-        </article>
+<script>
+/* =========================================================
+   DATA / CONFIG
+   ========================================================= */
+const STORAGE_KEY = 'ralfijsRebornData_v1';
 
-        <article class="card">
-          <div class="section-title"><h2>Current month snapshot</h2><small id="currentMonthLabel"></small></div>
-          <div class="stats-grid" id="snapshotStats"></div>
-          <p class="quote" style="margin-top:18px">Your direction matters more than one perfect day.</p>
-        </article>
-      </div>
+const DAY_TYPES = {
+  1: { name:'Pirmdiena', title:'Bāzes disciplīnas diena', weighIn:false,
+       mission:'Sākt nedēļu ar pilnu disciplīni — bez izņēmumiem',
+       tasks:['Atspiešanās','Preses treniņš','RalfijsWEB klientu uzrunas','Tēriņu pieraksts','Ģimenes laiks','Sagatavošanās nākamajai dienai'] },
+  2: { name:'Otrdiena', title:'Spēka diena', weighIn:true,
+       mission:'Izpildīt spēka treniņu',
+       tasks:['Spēka treniņš','RalfijsWEB follow-up','Finanšu kontrole','Atsildīšanās','Nākamās dienas sagatavošana','Svēršanās'] },
+  3: { name:'Trešdiena', title:'Skriešanas diena', weighIn:false,
+       mission:'Izpildīt skriešanas treniņu',
+       tasks:['Skriešana vai intervāli','Mobilitāte','RalfijsWEB darba bloks','Tēriņu kontrole','Ģimenes laiks'] },
+  4: { name:'Ceturtdiena', title:'Spēka diena', weighIn:false,
+       mission:'Izpildīt otro nedēļas spēka treniņu',
+       tasks:['Otrais nedēļas spēka treniņš','RalfijsWEB satura izveide','Finanšu kontrole','Atjaunošanās','Dienas noslēgšana'] },
+  5: { name:'Piektdiena', title:'Izpildes diena', weighIn:false,
+       mission:'Pabeigt vienu konkrētu RalfijsWEB rezultātu',
+       tasks:['Viegls fiziskais treniņš','Viens gatavs RalfijsWEB rezultāts','Ģimenes laiks','Sagatavošanās sestdienas dežūrai'] },
+  6: { name:'Sestdiena', title:'24 stundu dežūras minimums', weighIn:true,
+       mission:'Noturēt minimumu dežūras laikā',
+       tasks:['Ierasties sagatavotam','Paņemt ēdienu un ūdeni','Īsa kustība, ja iespējams','Pierakstīt vienu biznesa ideju','Reģistrēt tēriņus','Īss check-in','Svēršanās'] },
+  0: { name:'Svētdiena', title:'Atjaunošanās diena', weighIn:false,
+       mission:'Atjaunoties un sagatavoties nākamajai nedēļai',
+       tasks:['Pastaiga','Mobilitāte','Meal Prep','Ģimenes laiks','Neliels RalfijsWEB uzdevums','Tēriņu kontrole','Sagatavošanās pirmdienai'] },
+};
 
-      <article class="card" style="margin-top:18px">
-        <div class="section-title"><h2>Discipline trend</h2><small>Last 6 months</small></div>
-        <div class="chart" id="disciplineChart"></div>
-      </article>
-    </section>
+const NUTRITION_ITEMS = [
+  {key:'breakfast', label:'Brokastis apēstas'},
+  {key:'lunch', label:'Pusdienas apēstas'},
+  {key:'dinner', label:'Vakariņas apēstas'},
+  {key:'extra', label:'Papildus ēdienreize apēsta'},
+  {key:'water', label:'Izdzerti vismaz 2 litri ūdens'},
+];
 
-    <section id="monthlyView" class="view">
-      <article class="card">
-        <div class="monthly-head">
-          <div>
-            <div class="eyebrow">Monthly growth report</div>
-            <h2 id="monthComparisonTitle">This month vs last month</h2>
-          </div>
-          <div class="overall-change trend-flat" id="overallGrowth">0%</div>
-        </div>
-        <div class="stats-grid" id="pillarGrowth"></div>
-      </article>
+const CHECKIN_FIELDS = [
+  {key:'discipline', label:'Disciplīnas vērtējums (1-10)', type:'number', min:1,max:10},
+  {key:'energy', label:'Enerģijas līmenis (1-10)', type:'number', min:1,max:10},
+  {key:'mood', label:'Noskaņojums (1-10)', type:'number', min:1,max:10},
+  {key:'sleep', label:'Miega stundas', type:'number', min:0,max:14, step:0.5},
+  {key:'webMinutes', label:'RalfijsWEB darba minūtes', type:'number', min:0},
+  {key:'spending', label:'Šodienas tēriņi (€)', type:'number', min:0, step:0.01},
+  {key:'win', label:'Lielākā uzvara', type:'text', full:true},
+  {key:'blocker', label:'Kas traucēja', type:'text', full:true},
+];
 
-      <article class="card" style="margin-top:18px">
-        <div class="section-title"><h2>Metric comparison</h2><small>Growth and regression</small></div>
-        <div style="overflow:auto">
-          <table class="metric-table">
-            <thead><tr><th>Metric</th><th>Previous</th><th>Current</th><th>Change</th></tr></thead>
-            <tbody id="comparisonTable"></tbody>
-          </table>
-        </div>
-      </article>
+/* =========================================================
+   STATE
+   ========================================================= */
+function todayISO(d=new Date()){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function defaultState(){
+  return { startDate: todayISO(), logs: {}, weights: [] };
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return defaultState();
+    const parsed = JSON.parse(raw);
+    if(!parsed.startDate) parsed.startDate = todayISO();
+    if(!parsed.logs) parsed.logs = {};
+    if(!parsed.weights) parsed.weights = [];
+    return parsed;
+  }catch(e){ return defaultState(); }
+}
+function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
-      <article class="card" style="margin-top:18px">
-        <div class="section-title"><h2>Consistency heatmap</h2><small id="heatmapLabel"></small></div>
-        <div class="heatmap" id="heatmap"></div>
-      </article>
-    </section>
+let state = loadState();
 
-    <section id="settingsView" class="view">
-      <div class="split">
-        <article class="card">
-          <div class="section-title"><h2>Personal settings</h2><small>Stored only on this device</small></div>
-          <div class="settings-list">
-            <div class="field"><label>Your name</label><input id="userName" value="Ralfijs"></div>
-            <div class="field"><label>Primary monthly focus</label><input id="monthlyFocus" placeholder="Example: Army fitness and consistency"></div>
-            <div class="field"><label>Minimum successful day score</label><input id="successThreshold" type="number" min="1" max="100" value="70"></div>
-            <button class="primary" id="saveSettingsBtn">Save settings</button>
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="section-title"><h2>Data controls</h2><small>Backup recommended</small></div>
-          <div class="settings-list">
-            <button class="secondary" id="exportBtn">Export backup</button>
-            <label class="secondary" style="text-align:center">
-              Import backup
-              <input id="importInput" type="file" accept=".json" style="display:none">
-            </label>
-            <button class="danger" id="resetBtn">Reset all app data</button>
-          </div>
-        </article>
-      </div>
-    </section>
-  </main>
-
-  <nav class="tabs">
-    <button class="tab active" data-view="todayView">Today</button>
-    <button class="tab" data-view="progressView">Progress</button>
-    <button class="tab" data-view="monthlyView">Monthly</button>
-    <button class="tab" data-view="settingsView">Settings</button>
-  </nav>
-
-  <script>
-    const KEY = "ralfijsRebornDataV1";
-    const todayKey = new Date().toISOString().slice(0,10);
-    const monthKey = todayKey.slice(0,7);
-
-    const defaultData = {
-      settings:{name:"Ralfijs",focus:"",threshold:70},
-      currentMission:"Complete one action that moves your life forward.",
-      tasks:[
-        {id:"bed",text:"Make the bed",pillar:"Discipline"},
-        {id:"water",text:"Drink at least 1 litre of water",pillar:"Health"},
-        {id:"training",text:"Complete training or recovery",pillar:"Army"},
-        {id:"web",text:"Complete one RalfijsWEB action",pillar:"Business"},
-        {id:"money",text:"Record all spending",pillar:"Money"},
-        {id:"prepare",text:"Prepare tomorrow",pillar:"Discipline"},
-        {id:"checkin",text:"Complete daily check-in",pillar:"Discipline"}
-      ],
-      days:{},
-      months:{}
+function getLog(dateStr){
+  if(!state.logs[dateStr]){
+    state.logs[dateStr] = {
+      tasks:{}, mission:false,
+      nutrition:{breakfast:false,lunch:false,dinner:false,extra:false,water:false},
+      checkin:null, weight:null
     };
+  }
+  return state.logs[dateStr];
+}
 
-    let data = loadData();
+/* =========================================================
+   NUTRITION PHASE LOGIC
+   ========================================================= */
+function daysBetween(a,b){
+  const d1 = new Date(a+'T00:00:00');
+  const d2 = new Date(b+'T00:00:00');
+  return Math.round((d2-d1)/86400000);
+}
+function getPhase(dateStr){
+  let days = daysBetween(state.startDate, dateStr);
+  if(days<0) days = 0;
+  if(days<7)  return {phase:1,label:'1. nedēļa — adaptācija',kcal:'1900–2100 kcal',oats:80,rice:100,pasta:100,extra:null,day:days+1,totalDays:7};
+  if(days<14) return {phase:2,label:'2. nedēļa — adaptācija',kcal:'2200–2400 kcal',oats:100,rice:130,pasta:130,extra:null,day:days-7+1,totalDays:7};
+  if(days<21) return {phase:3,label:'3. nedēļa — adaptācija',kcal:'2500–2700 kcal',oats:100,rice:130,pasta:130,extra:'2 olas vai 200g biezpiena',day:days-14+1,totalDays:7};
+  return {phase:4,label:'Pilns masas pieauguma režīms',kcal:'2500–2700+ kcal',oats:110,rice:150,pasta:150,extra:'2 olas vai 200g biezpiena',day:days-21+1,totalDays:null};
+}
+function buildMeals(phase){
+  return {
+    breakfast: `${phase.oats}g auzu pārslu, 250ml piena, 1 banāns`,
+    lunch: `Vistas fileja, ${phase.rice}g sauso rīsu, dārzeņi, olīveļļa`,
+    dinner: `Maltā liellopa gaļa, ${phase.pasta}g sauso makaronu, dārzeņi, biezpiens pēc apetītes`,
+    extra: phase.extra ? phase.extra : 'Pēc izvēles — olas vai biezpiens',
+    water: 'Vismaz 2 litri ūdens'
+  };
+}
 
-    function loadData(){
+/* =========================================================
+   RENDER: TODAY
+   ========================================================= */
+function renderToday(){
+  const now = new Date();
+  const dateStr = todayISO(now);
+  const dow = now.getDay();
+  const dayCfg = DAY_TYPES[dow];
+  const log = getLog(dateStr);
+  const phase = getPhase(dateStr);
+  const meals = buildMeals(phase);
+
+  // progress calc
+  const taskKeys = dayCfg.tasks.map((_,i)=>String(i));
+  const tasksDone = taskKeys.filter(k=>log.tasks[k]).length;
+  const nutritionDone = NUTRITION_ITEMS.filter(n=>log.nutrition[n.key]).length;
+  const totalItems = taskKeys.length + 1 + NUTRITION_ITEMS.length + 1; // +mission +checkin
+  const doneItems = tasksDone + (log.mission?1:0) + nutritionDone + (log.checkin?1:0);
+  const pct = totalItems ? Math.round(doneItems/totalItems*100) : 0;
+
+  const weighInNeeded = dayCfg.weighIn && now.getHours()>=7 && log.weight===null;
+
+  let html = '';
+
+  html += `<div class="briefing"><div class="cbr"></div>
+    <div class="eyebrow">Operācija — ${dayCfg.name.toUpperCase()}</div>
+    <h2>${dayCfg.title}</h2>
+    <div class="sub">${phase.label}${phase.totalDays? ` · diena ${phase.day}/${phase.totalDays}`:''} · mērķis: ${phase.kcal}</div>
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="progress-pct">${pct}%</div>
+    </div>
+  </div>`;
+
+  if(weighInNeeded){
+    html += `<div class="weighin-banner">⚠ Šodien ir svēršanās diena. Ievadi savu svaru zemāk.</div>`;
+  }
+
+  // Mission
+  html += `<div class="card"><h3>Šodienas galvenā misija</h3>
+    <div class="item mission-item ${log.mission?'done':''}">
+      <input type="checkbox" id="mission-cb" ${log.mission?'checked':''}>
+      <label for="mission-cb">${dayCfg.mission}</label>
+    </div></div>`;
+
+  // Tasks
+  html += `<div class="card"><h3>Šodienas uzdevumi <span class="badge">${tasksDone}/${taskKeys.length}</span></h3>`;
+  dayCfg.tasks.forEach((t,i)=>{
+    const checked = !!log.tasks[String(i)];
+    html += `<div class="item ${checked?'done':''}">
+      <input type="checkbox" class="task-cb" data-idx="${i}" ${checked?'checked':''}>
+      <label data-idx="${i}" class="task-label">${t}</label>
+    </div>`;
+  });
+  html += `</div>`;
+
+  // Nutrition
+  html += `<div class="card"><h3>Šodienas uzturs <span class="badge">${nutritionDone}/${NUTRITION_ITEMS.length}</span></h3>`;
+  NUTRITION_ITEMS.forEach(n=>{
+    const checked = !!log.nutrition[n.key];
+    html += `<div class="item ${checked?'done':''}">
+      <input type="checkbox" class="nutri-cb" data-key="${n.key}" ${checked?'checked':''}>
+      <label class="nutri-label" data-key="${n.key}">${n.label}</label>
+      <span class="meta">${meals[n.key]}</span>
+    </div>`;
+  });
+  html += `</div>`;
+
+  // Weigh-in
+  html += `<div class="card"><h3>Svēršanās ${dayCfg.weighIn?'<span class="badge">ŠODIEN</span>':''}</h3>
+    <div class="weight-row">
+      <input type="number" step="0.1" id="weight-input" placeholder="kg" value="${log.weight!==null?log.weight:''}">
+      <button class="btn" id="save-weight-btn">Saglabāt</button>
+    </div>
+  </div>`;
+
+  // Evening check-in
+  html += `<div class="card"><h3>Vakara check-in</h3>`;
+  if(log.checkin){
+    html += `<div class="checkin-done">✓ Diena noslēgta. Disciplīna: ${log.checkin.discipline ?? '—'}/10, Enerģija: ${log.checkin.energy ?? '—'}/10, Miegs: ${log.checkin.sleep ?? '—'}h</div>
+      <div style="margin-top:10px;"><button class="btn secondary" id="edit-checkin-btn">Rediģēt</button></div>`;
+  } else {
+    html += `<div class="form-grid" id="checkin-form">`;
+    CHECKIN_FIELDS.forEach(f=>{
+      html += `<div class="field ${f.full?'full':''}">
+        <label>${f.label}</label>
+        <input type="${f.type}" data-key="${f.key}" ${f.min!==undefined?`min="${f.min}"`:''} ${f.max!==undefined?`max="${f.max}"`:''} ${f.step?`step="${f.step}"`:''}>
+      </div>`;
+    });
+    html += `</div><div style="margin-top:12px;"><button class="btn" id="save-checkin-btn">Saglabāt un noslēgt dienu</button></div>`;
+  }
+  html += `</div>`;
+
+  document.getElementById('tab-today').innerHTML = html;
+  wireTodayEvents(dateStr, dayCfg, taskKeys);
+}
+
+function wireTodayEvents(dateStr, dayCfg, taskKeys){
+  const log = getLog(dateStr);
+
+  document.getElementById('mission-cb').addEventListener('change', e=>{
+    log.mission = e.target.checked; saveState(); renderToday();
+  });
+
+  document.querySelectorAll('.task-cb').forEach(cb=>{
+    cb.addEventListener('change', e=>{
+      log.tasks[e.target.dataset.idx] = e.target.checked; saveState(); renderToday();
+    });
+  });
+  document.querySelectorAll('.task-label').forEach(l=>{
+    l.addEventListener('click', ()=>{
+      const idx = l.dataset.idx;
+      log.tasks[idx] = !log.tasks[idx]; saveState(); renderToday();
+    });
+  });
+
+  document.querySelectorAll('.nutri-cb').forEach(cb=>{
+    cb.addEventListener('change', e=>{
+      log.nutrition[e.target.dataset.key] = e.target.checked; saveState(); renderToday();
+    });
+  });
+  document.querySelectorAll('.nutri-label').forEach(l=>{
+    l.addEventListener('click', ()=>{
+      const key = l.dataset.key;
+      log.nutrition[key] = !log.nutrition[key]; saveState(); renderToday();
+    });
+  });
+
+  document.getElementById('save-weight-btn').addEventListener('click', ()=>{
+    const val = parseFloat(document.getElementById('weight-input').value);
+    if(isNaN(val) || val<=0){ alert('Ievadi derīgu svaru.'); return; }
+    log.weight = val;
+    const existingIdx = state.weights.findIndex(w=>w.date===dateStr);
+    if(existingIdx>=0) state.weights[existingIdx].weight = val;
+    else state.weights.push({date:dateStr, weight:val});
+    state.weights.sort((a,b)=>a.date.localeCompare(b.date));
+    saveState(); renderToday();
+  });
+
+  const editBtn = document.getElementById('edit-checkin-btn');
+  if(editBtn){
+    editBtn.addEventListener('click', ()=>{ log.checkin = null; saveState(); renderToday(); });
+  }
+  const saveCheckinBtn = document.getElementById('save-checkin-btn');
+  if(saveCheckinBtn){
+    saveCheckinBtn.addEventListener('click', ()=>{
+      const data = {};
+      document.querySelectorAll('#checkin-form [data-key]').forEach(inp=>{
+        data[inp.dataset.key] = inp.type==='number' ? (inp.value===''?null:parseFloat(inp.value)) : inp.value;
+      });
+      log.checkin = data;
+      saveState(); renderToday();
+    });
+  }
+}
+
+/* =========================================================
+   RENDER: STATS
+   ========================================================= */
+function monthKey(dateStr){ return dateStr.slice(0,7); }
+
+function avgExecutionForMonth(ym){
+  const dates = Object.keys(state.logs).filter(d=>monthKey(d)===ym);
+  if(!dates.length) return null;
+  let sum=0, count=0;
+  dates.forEach(d=>{
+    const dow = new Date(d+'T00:00:00').getDay();
+    const cfg = DAY_TYPES[dow];
+    const log = state.logs[d];
+    const taskKeys = cfg.tasks.map((_,i)=>String(i));
+    const tasksDone = taskKeys.filter(k=>log.tasks[k]).length;
+    const nutritionDone = NUTRITION_ITEMS.filter(n=>log.nutrition[n.key]).length;
+    const total = taskKeys.length + 1 + NUTRITION_ITEMS.length + 1;
+    const done = tasksDone + (log.mission?1:0) + nutritionDone + (log.checkin?1:0);
+    if(total>0){ sum += done/total*100; count++; }
+  });
+  return count ? Math.round(sum/count) : null;
+}
+
+function renderStats(){
+  const now = new Date();
+  const thisYm = monthKey(todayISO(now));
+  const prevDate = new Date(now.getFullYear(), now.getMonth()-1, 1);
+  const prevYm = monthKey(todayISO(prevDate));
+
+  const curAvg = avgExecutionForMonth(thisYm);
+  const prevAvg = avgExecutionForMonth(prevYm);
+  let trendHtml = '';
+  if(curAvg!==null && prevAvg!==null){
+    const diff = curAvg - prevAvg;
+    trendHtml = `<span class="${diff>=0?'delta-up':'delta-down'}">${diff>=0?'+':''}${diff}% pret iepr. mēnesi</span>`;
+  }
+
+  const weights = state.weights;
+  const lastWeight = weights.length ? weights[weights.length-1] : null;
+  const firstWeight = weights.length ? weights[0] : null;
+  let weightDeltaHtml = '—';
+  if(lastWeight && firstWeight && weights.length>1){
+    const d = (lastWeight.weight - firstWeight.weight).toFixed(1);
+    weightDeltaHtml = `<span class="${d>=0?'delta-up':'delta-down'}">${d>=0?'+':''}${d} kg kopš sākuma</span>`;
+  }
+
+  const monthWeighins = weights.filter(w=>monthKey(w.date)===thisYm).length;
+
+  let html = `<div class="stat-grid">
+    <div class="stat-box"><div class="num">${curAvg!==null?curAvg+'%':'—'}</div><div class="lbl">Šī mēneša izpilde</div></div>
+    <div class="stat-box"><div class="num">${lastWeight?lastWeight.weight+' kg':'—'}</div><div class="lbl">Pēdējais svars</div></div>
+  </div>
+  <div class="card"><h3>Ikmēneša tendence</h3><div style="font-size:13px;">${trendHtml || 'Nav pietiekami datu salīdzināšanai.'}</div></div>
+  <div class="card"><h3>Svara dinamika</h3>
+    <div style="margin-bottom:8px; font-size:13px;">${weightDeltaHtml}</div>
+    <div style="margin-bottom:10px; font-size:12px; color:var(--muted);">Svēršanās šomēnes: ${monthWeighins}</div>`;
+
+  if(weights.length){
+    html += `<table><tr><th>Datums</th><th>Svars</th></tr>`;
+    weights.slice().reverse().slice(0,15).forEach(w=>{
+      html += `<tr><td>${w.date}</td><td>${w.weight} kg</td></tr>`;
+    });
+    html += `</table>`;
+  } else {
+    html += `<div class="empty">Vēl nav svēršanās ierakstu.</div>`;
+  }
+  html += `</div>`;
+
+  // execution history (last 14 logged days)
+  const loggedDates = Object.keys(state.logs).sort().reverse().slice(0,14);
+  html += `<div class="card"><h3>Pēdējās dienas</h3>`;
+  if(loggedDates.length){
+    html += `<table><tr><th>Datums</th><th>Diena</th><th>Izpilde</th></tr>`;
+    loggedDates.forEach(d=>{
+      const dow = new Date(d+'T00:00:00').getDay();
+      const cfg = DAY_TYPES[dow];
+      const log = state.logs[d];
+      const taskKeys = cfg.tasks.map((_,i)=>String(i));
+      const tasksDone = taskKeys.filter(k=>log.tasks[k]).length;
+      const nutritionDone = NUTRITION_ITEMS.filter(n=>log.nutrition[n.key]).length;
+      const total = taskKeys.length + 1 + NUTRITION_ITEMS.length + 1;
+      const done = tasksDone + (log.mission?1:0) + nutritionDone + (log.checkin?1:0);
+      const p = total?Math.round(done/total*100):0;
+      html += `<tr><td>${d}</td><td>${cfg.name}</td><td>${p}%</td></tr>`;
+    });
+    html += `</table>`;
+  } else {
+    html += `<div class="empty">Vēl nav ierakstu.</div>`;
+  }
+  html += `</div>`;
+
+  document.getElementById('tab-stats').innerHTML = html;
+}
+
+/* =========================================================
+   RENDER: SETTINGS
+   ========================================================= */
+function renderSettings(){
+  let html = `<div class="card"><h3>Uztura adaptācijas sākuma datums</h3>
+    <div class="settings-row">
+      <div>
+        <div class="lbl">Sākuma datums</div>
+        <div class="desc">Nosaka, kurā uztura fāzē pašlaik atrodies</div>
+      </div>
+      <input type="date" id="start-date-input" value="${state.startDate}">
+    </div>
+    <div style="margin-top:10px; text-align:right;"><button class="btn" id="save-start-date-btn">Saglabāt</button></div>
+  </div>`;
+
+  html += `<div class="card"><h3>Dati un rezerves kopija</h3>
+    <div class="settings-row">
+      <div><div class="lbl">Eksportēt datus</div><div class="desc">Lejupielādē visus datus kā JSON failu</div></div>
+      <button class="btn secondary" id="export-btn">Eksportēt</button>
+    </div>
+    <div class="settings-row">
+      <div><div class="lbl">Importēt datus</div><div class="desc">Atjauno datus no iepriekš eksportēta faila</div></div>
+      <button class="btn secondary" id="import-btn">Importēt</button>
+      <input type="file" id="import-file" accept="application/json">
+    </div>
+    <div class="settings-row">
+      <div><div class="lbl">Dzēst visus datus</div><div class="desc">Neatgriezeniski notīra visu vēsturi</div></div>
+      <button class="btn danger" id="reset-btn">Dzēst</button>
+    </div>
+  </div>`;
+
+  document.getElementById('tab-settings').innerHTML = html;
+
+  document.getElementById('save-start-date-btn').addEventListener('click', ()=>{
+    const val = document.getElementById('start-date-input').value;
+    if(val){ state.startDate = val; saveState(); renderAll(); alert('Saglabāts.'); }
+  });
+
+  document.getElementById('export-btn').addEventListener('click', ()=>{
+    const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `ralfijs-reborn-backup-${todayISO()}.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('import-btn').addEventListener('click', ()=>{
+    document.getElementById('import-file').click();
+  });
+  document.getElementById('import-file').addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
       try{
-        const parsed = JSON.parse(localStorage.getItem(KEY));
-        return parsed ? {...defaultData,...parsed,settings:{...defaultData.settings,...parsed.settings}} : structuredClone(defaultData);
-      }catch(e){ return structuredClone(defaultData); }
-    }
-    function saveData(){ localStorage.setItem(KEY,JSON.stringify(data)); }
-
-    function ensureDay(){
-      if(!data.days[todayKey]){
-        data.days[todayKey]={tasks:{},missionDone:false,checkin:{},score:0};
-      }
-      return data.days[todayKey];
-    }
-
-    function fmtDate(dateStr){
-      return new Date(dateStr+"T12:00:00").toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"});
-    }
-
-    function renderToday(){
-      document.getElementById("todayDate").textContent = fmtDate(todayKey);
-      document.getElementById("missionDisplay").textContent = data.currentMission;
-      const day = ensureDay();
-
-      const list = document.getElementById("taskList");
-      list.innerHTML = "";
-      data.tasks.forEach(task=>{
-        const row = document.createElement("label");
-        row.className = "task"+(day.tasks[task.id]?" done":"");
-        row.innerHTML = `
-          <input type="checkbox" ${day.tasks[task.id]?"checked":""} data-task="${task.id}">
-          <span class="task-text">${task.text}</span>
-          <span class="pill">${task.pillar}</span>
-        `;
-        list.appendChild(row);
-      });
-
-      list.querySelectorAll("input").forEach(cb=>{
-        cb.addEventListener("change",()=>{
-          day.tasks[cb.dataset.task]=cb.checked;
-          calculateScore();
-          saveData();
-          renderToday();
-          renderMonthly();
-        });
-      });
-
-      const c = day.checkin || {};
-      ["discipline","energy","mood","sleep","weight","spent","webMinutes","win","blocker","tomorrowMission"].forEach(id=>{
-        document.getElementById(id).value = c[id] ?? "";
-      });
-
-      document.getElementById("missionDoneBtn").textContent = day.missionDone ? "Mission completed" : "Mark completed";
-      document.getElementById("missionDoneBtn").className = day.missionDone ? "secondary" : "primary";
-      calculateScore(false);
-    }
-
-    function calculateScore(write=true){
-      const day = ensureDay();
-      const completed = data.tasks.filter(t=>day.tasks[t.id]).length;
-      const taskPart = data.tasks.length ? (completed/data.tasks.length)*65 : 0;
-      const missionPart = day.missionDone ? 25 : 0;
-      const checkinPart = day.checkin && day.checkin.saved ? 10 : 0;
-      day.score = Math.round(taskPart+missionPart+checkinPart);
-      if(write) saveData();
-
-      const deg = day.score*3.6;
-      document.getElementById("scoreRing").style.background = `conic-gradient(var(--accent) ${deg}deg, #27312b ${deg}deg)`;
-      document.getElementById("scoreValue").innerHTML = `${day.score}<span>%</span>`;
-      document.getElementById("taskCount").textContent = `${completed}/${data.tasks.length} completed`;
-
-      let status="Drifting";
-      if(day.score>=95) status="Reborn";
-      else if(day.score>=80) status="Locked In";
-      else if(day.score>=60) status="Disciplined";
-      else if(day.score>=40) status="Rebuilding";
-      document.getElementById("scoreStatus").textContent=status;
-    }
-
-    function saveCheckin(){
-      const day = ensureDay();
-      const ids=["discipline","energy","mood","sleep","weight","spent","webMinutes","win","blocker","tomorrowMission"];
-      day.checkin={saved:true};
-      ids.forEach(id=>day.checkin[id]=document.getElementById(id).value);
-      day.tasks.checkin=true;
-      if(day.checkin.tomorrowMission.trim()) data.currentMission=day.checkin.tomorrowMission.trim();
-      calculateScore();
-      saveData();
-      renderAll();
-      alert("Daily check-in saved.");
-    }
-
-    function saveMetrics(){
-      const ids=["pushups","situps","runTime","savings","debt","revenue","leads","content"];
-      data.months[monthKey]=data.months[monthKey]||{};
-      ids.forEach(id=>{
-        const val=document.getElementById(id).value;
-        data.months[monthKey][id]=val===""?null:Number(val);
-      });
-      data.months[monthKey].updated=todayKey;
-      saveData();
-      renderProgress();
-      renderMonthly();
-      alert("Monthly snapshot saved.");
-    }
-
-    const metricMeta = {
-      pushups:{label:"Push-ups",better:"high",unit:""},
-      situps:{label:"Sit-ups",better:"high",unit:""},
-      runTime:{label:"3 km time",better:"low",unit:" min"},
-      savings:{label:"Savings",better:"high",unit:" €"},
-      debt:{label:"Debt remaining",better:"low",unit:" €"},
-      revenue:{label:"RalfijsWEB revenue",better:"high",unit:" €"},
-      leads:{label:"Leads contacted",better:"high",unit:""},
-      content:{label:"Content published",better:"high",unit:""}
+        const imported = JSON.parse(ev.target.result);
+        if(!imported.logs || !imported.startDate){ alert('Nederīgs faila formāts.'); return; }
+        state = imported;
+        saveState(); renderAll();
+        alert('Dati importēti.');
+      }catch(err){ alert('Kļūda ielasot failu.'); }
     };
+    reader.readAsText(file);
+  });
 
-    function getPreviousMonth(key){
-      const [y,m]=key.split("-").map(Number);
-      const d=new Date(y,m-2,1);
-      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+  document.getElementById('reset-btn').addEventListener('click', ()=>{
+    if(confirm('Vai tiešām dzēst visus datus? Šo darbību nevar atsaukt.')){
+      state = defaultState();
+      saveState(); renderAll();
     }
+  });
+}
 
-    function changeFor(metric,current,previous){
-      if(current==null || previous==null) return null;
-      if(previous===0) return current===0?0:100;
-      let raw=((current-previous)/Math.abs(previous))*100;
-      if(metricMeta[metric].better==="low") raw*=-1;
-      return raw;
-    }
+/* =========================================================
+   NAV / INIT
+   ========================================================= */
+function renderAll(){
+  renderToday();
+  renderStats();
+  renderSettings();
+}
 
-    function renderProgress(){
-      document.getElementById("currentMonthLabel").textContent = new Date(monthKey+"-01T12:00:00").toLocaleDateString(undefined,{month:"long",year:"numeric"});
-      const m=data.months[monthKey]||{};
-      Object.keys(metricMeta).forEach(id=>document.getElementById(id).value=m[id]??"");
-
-      const stats=document.getElementById("snapshotStats");
-      stats.innerHTML="";
-      ["pushups","situps","runTime","savings","debt","revenue"].forEach(id=>{
-        const value=m[id];
-        const card=document.createElement("div");
-        card.className="stat";
-        card.innerHTML=`<span>${metricMeta[id].label}</span><strong>${value==null?"—":value+metricMeta[id].unit}</strong>`;
-        stats.appendChild(card);
-      });
-
-      renderDisciplineChart();
-    }
-
-    function monthlyDayScores(){
-      const grouped={};
-      Object.entries(data.days).forEach(([date,d])=>{
-        const mk=date.slice(0,7);
-        grouped[mk]=grouped[mk]||[];
-        grouped[mk].push(Number(d.score)||0);
-      });
-      return grouped;
-    }
-
-    function renderDisciplineChart(){
-      const grouped=monthlyDayScores();
-      const keys=[];
-      let d=new Date(monthKey+"-01T12:00:00");
-      for(let i=5;i>=0;i--){
-        const x=new Date(d.getFullYear(),d.getMonth()-i,1);
-        keys.push(`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,"0")}`);
-      }
-      const chart=document.getElementById("disciplineChart");
-      chart.innerHTML="";
-      keys.forEach(k=>{
-        const vals=grouped[k]||[];
-        const avg=vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):0;
-        const wrap=document.createElement("div");
-        wrap.className="bar-wrap";
-        wrap.innerHTML=`<div class="bar" style="height:${Math.max(5,avg*1.55)}px" title="${avg}%"></div><div>${new Date(k+"-01T12:00:00").toLocaleDateString(undefined,{month:"short"})}</div><strong>${avg}%</strong>`;
-        chart.appendChild(wrap);
-      });
-    }
-
-    function renderMonthly(){
-      const prevKey=getPreviousMonth(monthKey);
-      const current=data.months[monthKey]||{};
-      const previous=data.months[prevKey]||{};
-      const currName=new Date(monthKey+"-01T12:00:00").toLocaleDateString(undefined,{month:"long"});
-      const prevName=new Date(prevKey+"-01T12:00:00").toLocaleDateString(undefined,{month:"long"});
-      document.getElementById("monthComparisonTitle").textContent=`${currName} vs ${prevName}`;
-
-      const table=document.getElementById("comparisonTable");
-      table.innerHTML="";
-      const changes=[];
-      Object.keys(metricMeta).forEach(id=>{
-        const ch=changeFor(id,current[id],previous[id]);
-        if(ch!=null) changes.push(ch);
-        const cls=ch==null?"trend-flat":ch>1?"trend-up":ch<-1?"trend-down":"trend-flat";
-        const sign=ch==null?"No data":`${ch>0?"+":""}${ch.toFixed(1)}%`;
-        const tr=document.createElement("tr");
-        tr.innerHTML=`<td>${metricMeta[id].label}</td><td>${previous[id]??"—"}${previous[id]!=null?metricMeta[id].unit:""}</td><td>${current[id]??"—"}${current[id]!=null?metricMeta[id].unit:""}</td><td class="${cls}">${sign}</td>`;
-        table.appendChild(tr);
-      });
-
-      const dayScores=monthlyDayScores();
-      const currAvg=avg(dayScores[monthKey]||[]);
-      const prevAvg=avg(dayScores[prevKey]||[]);
-      const disciplineChange=prevAvg===0?(currAvg?100:0):((currAvg-prevAvg)/prevAvg)*100;
-      if(currAvg||prevAvg) changes.push(disciplineChange);
-
-      const overall=changes.length?changes.reduce((a,b)=>a+b,0)/changes.length:0;
-      const overallEl=document.getElementById("overallGrowth");
-      overallEl.textContent=`${overall>0?"+":""}${overall.toFixed(1)}%`;
-      overallEl.className="overall-change "+(overall>1?"trend-up":overall<-1?"trend-down":"trend-flat");
-
-      const pillar=document.getElementById("pillarGrowth");
-      pillar.innerHTML="";
-      const pillars=[
-        ["Army",avgChanges(["pushups","situps","runTime"],current,previous)],
-        ["RalfijsWEB",avgChanges(["revenue","leads","content"],current,previous)],
-        ["Money",avgChanges(["savings","debt"],current,previous)],
-        ["Discipline",disciplineChange]
-      ];
-      pillars.forEach(([name,val])=>{
-        const cls=val>1?"trend-up":val<-1?"trend-down":"trend-flat";
-        const div=document.createElement("div");
-        div.className="stat";
-        div.innerHTML=`<span>${name}</span><strong class="${cls}">${val>0?"+":""}${Number(val).toFixed(1)}%</strong>`;
-        pillar.appendChild(div);
-      });
-      renderHeatmap();
-    }
-
-    function avg(arr){return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0}
-    function avgChanges(ids,c,p){
-      const values=ids.map(id=>changeFor(id,c[id],p[id])).filter(v=>v!=null);
-      return values.length?avg(values):0;
-    }
-
-    function renderHeatmap(){
-      const heat=document.getElementById("heatmap");
-      heat.innerHTML="";
-      const [year,month]=monthKey.split("-").map(Number);
-      const daysInMonth=new Date(year,month,0).getDate();
-      document.getElementById("heatmapLabel").textContent=new Date(year,month-1,1).toLocaleDateString(undefined,{month:"long",year:"numeric"});
-      for(let i=1;i<=daysInMonth;i++){
-        const key=`${year}-${String(month).padStart(2,"0")}-${String(i).padStart(2,"0")}`;
-        const score=data.days[key]?.score||0;
-        let level=score>=80?4:score>=60?3:score>=30?2:score>0?1:0;
-        const d=document.createElement("div");
-        d.className="day "+(level?`l${level}`:"");
-        d.textContent=i;
-        d.title=`${key}: ${score}%`;
-        heat.appendChild(d);
-      }
-    }
-
-    function renderSettings(){
-      document.getElementById("userName").value=data.settings.name||"Ralfijs";
-      document.getElementById("monthlyFocus").value=data.settings.focus||"";
-      document.getElementById("successThreshold").value=data.settings.threshold||70;
-    }
-
-    function renderAll(){
-      renderToday();
-      renderProgress();
-      renderMonthly();
-      renderSettings();
-    }
-
-    document.getElementById("missionDoneBtn").addEventListener("click",()=>{
-      const day=ensureDay(); day.missionDone=!day.missionDone; calculateScore(); saveData(); renderToday(); renderMonthly();
+document.querySelectorAll('.nav button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    ['today','stats','settings'].forEach(t=>{
+      document.getElementById('tab-'+t).style.display = (t===btn.dataset.tab)?'block':'none';
     });
+  });
+});
 
-    document.getElementById("editMissionBtn").addEventListener("click",()=>{
-      const next=prompt("Today's Critical Mission:",data.currentMission);
-      if(next&&next.trim()){data.currentMission=next.trim();saveData();renderToday();}
-    });
+function updateDatestamp(){
+  const now = new Date();
+  const dow = DAY_TYPES[now.getDay()].name;
+  const opts = {day:'2-digit',month:'2-digit',year:'numeric'};
+  document.getElementById('datestamp').textContent = `${dow.toUpperCase()} · ${now.toLocaleDateString('lv-LV',opts)}`;
+}
 
-    document.getElementById("saveCheckinBtn").addEventListener("click",saveCheckin);
-    document.getElementById("saveMetricsBtn").addEventListener("click",saveMetrics);
+updateDatestamp();
+renderAll();
 
-    document.getElementById("saveSettingsBtn").addEventListener("click",()=>{
-      data.settings.name=document.getElementById("userName").value.trim()||"Ralfijs";
-      data.settings.focus=document.getElementById("monthlyFocus").value.trim();
-      data.settings.threshold=Number(document.getElementById("successThreshold").value)||70;
-      saveData(); alert("Settings saved.");
-    });
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
 
-    document.getElementById("exportBtn").addEventListener("click",()=>{
-      const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
-      const a=document.createElement("a");
-      a.href=URL.createObjectURL(blob);
-      a.download=`ralfijs-reborn-backup-${todayKey}.json`;
-      a.click(); URL.revokeObjectURL(a.href);
-    });
-
-    document.getElementById("importInput").addEventListener("change",async(e)=>{
-      const file=e.target.files[0]; if(!file)return;
-      try{
-        data=JSON.parse(await file.text());
-        saveData(); renderAll(); alert("Backup imported.");
-      }catch(err){alert("Invalid backup file.");}
-    });
-
-    document.getElementById("resetBtn").addEventListener("click",()=>{
-      if(confirm("Reset all Ralfijs Reborn data? This cannot be undone.")){
-        data=structuredClone(defaultData);saveData();renderAll();
-      }
-    });
-
-    document.querySelectorAll(".tab").forEach(tab=>{
-      tab.addEventListener("click",()=>{
-        document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-        document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
-        tab.classList.add("active");
-        document.getElementById(tab.dataset.view).classList.add("active");
-      });
-    });
-
-    renderAll();
-  </script>
+</script>
 </body>
 </html>
